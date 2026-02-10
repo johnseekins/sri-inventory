@@ -49,10 +49,8 @@ export async function sriHashes(...files: string[]) {
                     sriHash = el.getAttribute('integrity');
                     if(!sriHash) {
                         const srcPath = path.resolve(target, src.replace(/^\//, '').replace(/\?.*$/, ''));
-                        console.log(`Reading file data from ${srcPath}`);
                         const fileContent = await fs.readFile(srcPath);
                         sriHash = generateSRIHash(fileContent);
-                        console.log(`Calculated this hash: ${sriHash}`);
                     }
                 }
 
