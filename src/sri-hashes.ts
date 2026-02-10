@@ -7,7 +7,7 @@ import { DOM, generateSRIHash, argsConverter } from './utils'
  */
 export async function sriHashes(...files: string[]) {
     const { target } = argsConverter();
-    
+
     if(!files.length) {
         files = ['index.html'];
     }
@@ -29,20 +29,33 @@ export async function sriHashes(...files: string[]) {
             const linkElements = Array.from(document.querySelectorAll('link,script'));
             await Promise.all(linkElements.map(async (el: HTMLElement) => {
                 const src = el.getAttribute('src') || el.getAttribute('href');
-
-                if (!src || src.startsWith('http') || src.startsWith('//')) {
+                let sriHash;
+                if (!src || src.startsWith('//')) {
+                  console.log(`Skipping resource with no src: ${e1}`);
+                  return;
+                } else if (src.startsWith('http')) {
+                  // download actual file and calculate hash
+                  const res = await fetch(src);
+                  if (!res.ok) {
+                    console.error(`Could not download ${src} for creating sha`);
                     return;
+                  }
+                  const data = await res.text();
+                  sriHash = generateSRIHash(data);
+                } else {
+                    /**
+                     *  handle relative paths and remove query strings
+                     */
+                    sriHash = el.getAttribute('integrity');
+                    if(!sriHash) {
+                        const srcPath = path.resolve(target, src.replace(/^\//, '').replace(/\?.*$/, ''));
+                        console.log(`Reading file data from ${srcPath}`);
+                        const fileContent = await fs.readFile(srcPath);
+                        sriHash = generateSRIHash(fileContent);
+                        console.log(`Calculated this hash: ${sriHash}`);
+                    }
                 }
 
-                /**
-                 *  handle relative paths and remove query strings
-                 */
-                let sriHash = el.getAttribute('integrity');
-                if(!sriHash) {
-                    const srcPath = path.resolve(target, src.replace(/^\//, '').replace(/\?.*$/, ''));
-                    const fileContent = await fs.readFile(srcPath);
-                    sriHash = generateSRIHash(fileContent);
-                }
                 el.setAttribute('integrity', sriHash);
                 el.setAttribute('crossorigin', 'anonymous');
 
