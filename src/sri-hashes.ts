@@ -9,10 +9,10 @@ export async function sriHashes(...files: string[]) {
     const { target } = argsConverter();
 
     if(!files.length) {
-        files = ['index.html'];
+        fileList = ['index.html'];
     }
 
-    for (const file of files) {
+    for (const file of fileList) {
         const filePath = path.resolve(target, file);
         try {
             const rootContent = await fs.readFile(filePath, { encoding: 'utf-8' });

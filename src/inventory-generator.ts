@@ -64,7 +64,7 @@ export async function inventoryGenerator() {
                 script.hash = generateSRIHash(fileContent);
                 processedFiles.add(scriptPath);
             } catch (error) {
-                console.warn(`Predefined local script not found: ${script.name}`);
+                console.warn(`Predefined local script not found: ${script.name}: ${error}`);
             }
         }));
 
