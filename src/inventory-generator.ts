@@ -83,7 +83,7 @@ export async function inventoryGenerator() {
      * Step 1: Process each script element from index.html
      */
     await Promise.all(
-      scriptElements.map(async (script: HTMLElement) => {
+      scriptElements.map(async (script: Element) => {
         const src = script.getAttribute("src");
         if (!src) return;
 

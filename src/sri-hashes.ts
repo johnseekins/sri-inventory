@@ -28,7 +28,7 @@ export async function sriHashes(...files: string[]) {
        */
       const linkElements = Array.from(document.querySelectorAll("link,script"));
       await Promise.all(
-        linkElements.map(async (el: HTMLElement) => {
+        linkElements.map(async (el: Element) => {
           const src = el.getAttribute("src") || el.getAttribute("href");
           let sriHash: string | null;
           if (!src || src.startsWith("//")) {
