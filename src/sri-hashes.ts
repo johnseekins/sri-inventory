@@ -7,7 +7,7 @@ import { DOM, generateSRIHash, argsConverter } from './utils'
  */
 export async function sriHashes(...files: string[]) {
     const { target } = argsConverter();
-
+    let fileList = files;
     if(!files.length) {
         fileList = ['index.html'];
     }
