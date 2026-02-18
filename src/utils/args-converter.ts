@@ -1,7 +1,8 @@
 export function argsConverter() {
   return process.argv.slice(2).reduce(
     (acc, arg) => {
-      const tempArgArr = arg.split("=");
+      // only split on the first = to avoid unexpected truncation of values
+      const tempArgArr = arg.split(/=(.*)/, 2);
       if (tempArgArr[1]) {
         tempArgArr[1] = tempArgArr[1].replace(/(^('|")|('|")$)/g, "");
       }

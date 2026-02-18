@@ -1,5 +1,6 @@
 import * as fs from "fs/promises";
 import * as path from "path";
+import fetch from 'node-fetch';
 import { argsConverter, DOM, generateSRIHash } from "./utils";
 
 /**
