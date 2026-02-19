@@ -43,7 +43,7 @@ export async function sriHashes(...files: string[]) {
             return;
           } else if (src.startsWith("http")) {
             const ignore = IGNORED_URLS.filter((x) => {
-              return RegExp(x).test(src);
+              return src.includes(x);
             });
             // since we're making a filtered list, any matches means we shouldn't do this endpoint
             if (ignore.length > 0) {
