@@ -3,6 +3,11 @@ import * as path from "path";
 import fetch from 'node-fetch';
 import { argsConverter, DOM, generateSRIHash } from "./utils";
 
+const IGNORED_URLS: string[] = [
+  // actively doesn't support SRI: https://github.com/google/fonts/issues/473
+  'fonts.googleapis.com',
+];
+
 /**
  * Adds Subresource Integrity (SRI) hashes to link elements in HTML files
  */
@@ -30,12 +35,21 @@ export async function sriHashes(...files: string[]) {
       const linkElements = Array.from(document.querySelectorAll("link,script"));
       await Promise.all(
         linkElements.map(async (el: Element) => {
-          const src = el.getAttribute("src") || el.getAttribute("href");
+          const srcData = el.getAttribute('src') || el.getAttribute('href');
+          const src: string = srcData || '';
           let sriHash: string | null;
           if (!src || src.startsWith("//")) {
             console.log(`Skipping resource with no src: ${el}`);
             return;
           } else if (src.startsWith("http")) {
+            const ignore = IGNORED_URLS.filter((x) => {
+              return RegExp(x).test(src);
+            });
+            // since we're making a filtered list, any matches means we shouldn't do this endpoint
+            if (ignore.length > 0) {
+              console.log(`Skipping a URL that matches our filters: ${src}: ${ignore}`);
+              return;
+            }
             // download actual file into memory and calculate hash
             const res = await fetch(src);
             if (!res.ok) {
